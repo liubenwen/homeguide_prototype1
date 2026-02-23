@@ -3,14 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <title>Home Guide Prototype</title>
+  <title>Home Guide Prototype (Elder / Family)</title>
   <style>
     :root { --bg:#0bbf63; --fg:#fff; --muted: rgba(255,255,255,.78); }
-    body {
-      margin:0;
-      font-family: -apple-system, BlinkMacSystemFont, "Noto Sans TC","Segoe UI",Roboto,Arial,sans-serif;
-      background: var(--bg); color: var(--fg);
-    }
+    body { margin:0; font-family: -apple-system, BlinkMacSystemFont, "Noto Sans TC","Segoe UI",Roboto,Arial,sans-serif; background: var(--bg); color: var(--fg); }
     .wrap { min-height:100vh; display:flex; flex-direction:column; padding:16px; gap:12px; box-sizing:border-box; }
     .top { display:flex; justify-content:space-between; align-items:center; gap:10px; }
     .pill { background:rgba(0,0,0,.18); border:1px solid rgba(255,255,255,.25); padding:8px 12px; border-radius:999px; font-size:14px; }
@@ -22,165 +18,676 @@
       border:2px solid rgba(255,255,255,.35);
       color:var(--fg);
       border-radius:18px;
-      padding:10px 14px;
+      padding:12px 14px;
       font-size:16px;
-      font-weight:800;
+      font-weight:900;
     }
-    .btnPrimary { background:rgba(255,255,255,.92); color:#0a7a43; }
-    .btnDanger { background:rgba(255,255,255,.92); color:#b00020; }
+    .btnPrimary { background:rgba(255,255,255,.92); color:#0a7a43; border-color: rgba(255,255,255,.92); }
+    .btnDanger  { background:rgba(255,255,255,.92); color:#b00020; border-color: rgba(255,255,255,.92); }
 
-    .center { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; }
-    .title { font-size:18px; font-weight:900; }
+    .center { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; }
+    .title { font-size:20px; font-weight:950; letter-spacing:.3px; text-align:center; }
+    .subtitle { font-size:14px; font-weight:800; color: var(--muted); text-align:center; }
+
     .arrowBox { width:min(78vw,360px); height:min(78vw,360px); display:flex; align-items:center; justify-content:center; }
     #arrowWrap { width:90%; height:90%; transform-origin:50% 75%; filter:drop-shadow(0 14px 20px rgba(0,0,0,.18)); }
 
-    .distance { font-size:56px; font-weight:950; line-height:1; }
-    .sub { font-size:26px; font-weight:900; }
-    .hint { font-size:18px; font-weight:800; color:var(--muted); text-align:center; }
+    .distance { font-size:56px; font-weight:980; line-height:1; text-align:center; }
+    .sub { font-size:26px; font-weight:950; text-align:center; }
+    .hint { font-size:18px; font-weight:900; color:var(--muted); text-align:center; }
 
-    .bottom { display:flex; flex-direction:column; gap:10px; }
-    .row { display:flex; gap:10px; }
+    .row { display:flex; gap:10px; width:100%; }
     .row .btn { flex:1; }
 
     .panel {
-      display:none;
+      width:100%;
       background:rgba(0,0,0,.18);
       border:1px solid rgba(255,255,255,.25);
       border-radius:16px;
       padding:12px;
+      box-sizing:border-box;
     }
-    .panel h3 { margin:0 0 10px; font-size:16px; }
     .field { display:flex; flex-direction:column; gap:6px; margin-bottom:10px; }
-    .field label { font-size:13px; font-weight:800; }
-    .field input {
+    .field label { font-size:13px; font-weight:900; color: rgba(255,255,255,.92); }
+    .field input, .field textarea {
       border-radius:12px;
       padding:10px 12px;
       font-size:16px;
       border:1px solid rgba(255,255,255,.25);
+      outline:none;
     }
-    .hint2 { font-size:12px; color:rgba(255,255,255,.75); }
+    .field textarea { min-height: 74px; resize: vertical; }
+    .hint2 { font-size:12px; color:rgba(255,255,255,.75); line-height:1.4; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12px; }
+    .hidden { display:none !important; }
   </style>
 </head>
-<body>
 
+<body>
 <div class="wrap">
+
+  <!-- ===== TOP BAR ===== -->
   <div class="top">
-    <button class="btn" id="btnPerm">允許感測</button>
-    <div class="pill" id="status">尚未開始</div>
+    <button class="btn" id="btnBack">⬅ 返回</button>
+    <div class="pill" id="status">請選模式</div>
     <button class="btn" id="btnMute">語音：開</button>
   </div>
 
-  <div class="center">
-    <div class="title">回家引導（原型）</div>
+  <!-- ===== HOME (MODE SELECT) ===== -->
+  <div class="center" id="screenHome">
+    <div class="title">回家引導（網頁原型）</div>
+    <div class="subtitle">選擇入口：老人使用 / 家人設定</div>
+
+    <div class="row" style="max-width:520px;">
+      <button class="btn btnPrimary" id="goElder" style="font-size:22px; padding:18px 16px;">👴 老人模式</button>
+    </div>
+
+    <div class="row" style="max-width:520px;">
+      <button class="btn" id="goFamily" style="font-size:22px; padding:18px 16px;">👪 家人模式</button>
+    </div>
+
+    <div class="panel" style="max-width:520px;">
+      <div class="hint2">
+        ✅ 建議流程：先進「家人模式」設定住家位置與電話 → 產生分享連結 → 傳給爸爸 → 爸爸點連結就直接進老人模式。
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ELDER MODE ===== -->
+  <div class="center hidden" id="screenElder">
+    <div class="title">老人模式</div>
+    <div class="subtitle">只看箭頭走，走偏了會提醒你</div>
 
     <div class="arrowBox">
-      <div id="arrowWrap">
+      <div id="arrowWrap" aria-label="direction arrow">
+        <!-- 帶尾巴箭頭：路面漆箭頭感 -->
         <svg viewBox="0 0 200 200" width="100%" height="100%">
-          <rect x="88" y="60" width="24" height="95" rx="10" fill="white"/>
-          <path d="M100 22 L145 72 L118 72 L118 95 L82 95 L82 72 L55 72 Z" fill="white"/>
+          <rect x="88" y="60" width="24" height="95" rx="10" fill="rgba(255,255,255,.97)"></rect>
+          <path d="M100 22 L145 72 Q150 77 142 77 L118 77 L118 92 Q118 100 110 100 L90 100 Q82 100 82 92 L82 77 L58 77 Q50 77 55 72 Z"
+                fill="rgba(255,255,255,.99)"></path>
+          <rect x="97" y="78" width="6" height="70" rx="3" fill="rgba(11,191,99,.35)"></rect>
         </svg>
       </div>
     </div>
 
     <div class="distance" id="distText">-- 公尺</div>
     <div class="sub" id="dirText">請按「🏠 回家」</div>
-    <div class="hint" id="hintText">只看箭頭走</div>
+    <div class="hint" id="hintText">需要轉彎或走偏才會說話</div>
+
+    <div class="row" style="max-width:520px;">
+      <button class="btn btnPrimary" id="btnStart" style="font-size:22px; padding:16px 16px;">🏠 回家</button>
+      <button class="btn btnDanger" id="btnSOS" style="font-size:22px; padding:16px 16px;">🆘 求助</button>
+    </div>
+
+    <div class="row" style="max-width:520px;">
+      <button class="btn" id="btnPerm" style="padding:14px 14px;">允許感測</button>
+      <button class="btn" id="btnReRoute" style="padding:14px 14px;">↻ 重規劃</button>
+    </div>
+
+    <div class="pill mono" id="dbg" style="max-width:520px; text-align:center;">GPS: -- | Heading: -- | Route: --</div>
   </div>
 
-  <div class="bottom">
-    <div class="row">
-      <button class="btn btnPrimary" id="btnStart">🏠 回家</button>
-      <button class="btn" id="btnSettings">⚙️ 設定</button>
-    </div>
-    <div class="row">
-      <button class="btn btnDanger" id="btnSOS">🆘 求助</button>
-      <button class="btn" id="btnReRoute">↻ 重規劃</button>
-    </div>
+  <!-- ===== FAMILY MODE ===== -->
+  <div class="center hidden" id="screenFamily" style="align-items:stretch;">
+    <div class="title" style="text-align:center;">家人模式（設定）</div>
+    <div class="subtitle">設定住家位置、電話，並產生分享連結給長輩</div>
 
-    <div class="panel" id="settingsPanel">
-      <h3>設定（家人操作）</h3>
-
+    <div class="panel" style="max-width:680px; margin:0 auto;">
       <div class="field">
-        <label>家人電話</label>
-        <input id="familyPhone" placeholder="0912345678">
+        <label>家人電話（🆘 求助用）</label>
+        <input id="familyPhone" placeholder="例如：0912345678" />
+        <div class="hint2">長輩按 🆘 會直接撥打此電話。</div>
       </div>
 
       <div class="field">
-        <label>住家地址（可選）</label>
-        <input id="homeAddr" placeholder="台北市南港區市民大道八段369號">
-        <div class="hint2">或直接填經緯度（較準）</div>
+        <label>住家緯度（Lat）</label>
+        <input id="homeLat" placeholder="例如：25.052345" />
       </div>
 
       <div class="field">
-        <label>住家緯度</label>
-        <input id="homeLat" placeholder="25.xxxxx">
-      </div>
-
-      <div class="field">
-        <label>住家經度</label>
-        <input id="homeLng" placeholder="121.xxxxx">
+        <label>住家經度（Lng）</label>
+        <input id="homeLng" placeholder="例如：121.612345" />
+        <div class="hint2">建議用 Google Maps 長按家門口取得座標（最準）。</div>
       </div>
 
       <div class="row">
-        <button class="btn btnPrimary" id="btnSaveSettings">儲存</button>
-        <button class="btn" id="btnCloseSettings">關閉</button>
+        <button class="btn btnPrimary" id="btnSave">儲存設定</button>
+        <button class="btn" id="btnPreviewElder">用本機進老人模式測試</button>
+      </div>
+    </div>
+
+    <div class="panel" style="max-width:680px; margin:0 auto;">
+      <div class="field">
+        <label>分享給長輩的連結（點開直接進老人模式）</label>
+        <textarea id="shareLink" class="mono" readonly></textarea>
+        <div class="hint2">
+          你可以把這個連結貼到 LINE / WhatsApp 給爸爸。<br>
+          連結會帶入：住家座標、電話、以及可選的「自動開始」。
+        </div>
+      </div>
+
+      <div class="row">
+        <button class="btn" id="btnCopy">複製連結</button>
+        <button class="btn" id="btnToggleAuto">自動開始：開</button>
       </div>
     </div>
   </div>
+
 </div>
 
 <script>
-const STORE_KEY = "home_guide_settings";
-let settings = JSON.parse(localStorage.getItem(STORE_KEY)) || { familyPhone:"", home:{lat:null,lng:null} };
-
-let currPos=null, deviceHeading=null, mute=false, watchId=null;
-
-const $=id=>document.getElementById(id);
-
-function speak(t){ if(mute) return; speechSynthesis.speak(new SpeechSynthesisUtterance(t)); }
-function rotateArrow(d){ $("arrowWrap").style.transform=`rotate(${d}deg)`; }
-
-$("btnSettings").onclick=()=>{ $("settingsPanel").style.display="block";
-  $("familyPhone").value=settings.familyPhone||"";
-  $("homeLat").value=settings.home.lat||"";
-  $("homeLng").value=settings.home.lng||"";
-};
-
-$("btnCloseSettings").onclick=()=> $("settingsPanel").style.display="none";
-
-$("btnSaveSettings").onclick=()=>{
-  settings.familyPhone=$("familyPhone").value.trim();
-  settings.home.lat=parseFloat($("homeLat").value);
-  settings.home.lng=parseFloat($("homeLng").value);
-  localStorage.setItem(STORE_KEY,JSON.stringify(settings));
-  $("settingsPanel").style.display="none";
-  alert("已儲存");
-};
-
-$("btnStart").onclick=()=>{
-  speak("開始回家");
-  watchId=navigator.geolocation.watchPosition(p=>{
-    currPos={lat:p.coords.latitude,lng:p.coords.longitude};
-    $("distText").textContent="定位中";
-  });
-};
-
-$("btnSOS").onclick=()=>{
-  if(settings.familyPhone) location.href=`tel:${settings.familyPhone}`;
-};
-
-$("btnMute").onclick=()=>{ mute=!mute; $("btnMute").textContent=`語音：${mute?"關":"開"}`; };
-
-$("btnPerm").onclick=async()=>{
-  if(DeviceOrientationEvent?.requestPermission){
-    await DeviceOrientationEvent.requestPermission();
+/* ===================== Settings ===================== */
+const STORE_KEY = "home_guide_settings_v2";
+function loadSettings(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(!raw) return { familyPhone:"", home:{lat:null,lng:null}, autoStart:true };
+    const s = JSON.parse(raw);
+    return {
+      familyPhone: s.familyPhone || "",
+      home: s.home || {lat:null,lng:null},
+      autoStart: (typeof s.autoStart === "boolean") ? s.autoStart : true
+    };
+  }catch(e){
+    return { familyPhone:"", home:{lat:null,lng:null}, autoStart:true };
   }
-  alert("感測已啟用");
+}
+function saveSettings(s){
+  localStorage.setItem(STORE_KEY, JSON.stringify(s));
+}
+
+let settings = loadSettings();
+
+/* ===================== Helpers ===================== */
+const $ = (id)=>document.getElementById(id);
+function toRad(d){ return d * Math.PI / 180; }
+function toDeg(r){ return r * 180 / Math.PI; }
+function normRel(a){ let x = ((a + 180) % 360) - 180; return x; }
+
+function distanceMeters(a, b){
+  const R=6371000;
+  const dLat = toRad(b.lat-a.lat);
+  const dLng = toRad(b.lng-a.lng);
+  const s1=Math.sin(dLat/2), s2=Math.sin(dLng/2);
+  const aa=s1*s1+Math.cos(toRad(a.lat))*Math.cos(toRad(b.lat))*s2*s2;
+  const c=2*Math.atan2(Math.sqrt(aa),Math.sqrt(1-aa));
+  return R*c;
+}
+function bearingDeg(a, b){
+  const φ1=toRad(a.lat), φ2=toRad(b.lat);
+  const λ1=toRad(a.lng), λ2=toRad(b.lng);
+  const y=Math.sin(λ2-λ1)*Math.cos(φ2);
+  const x=Math.cos(φ1)*Math.sin(φ2)-Math.sin(φ1)*Math.cos(φ2)*Math.cos(λ2-λ1);
+  let θ=toDeg(Math.atan2(y,x));
+  return (θ+360)%360;
+}
+function setStatus(text, type=""){
+  $("status").textContent = text;
+  $("status").className = "pill " + (type||"");
+}
+function rotateArrow(deg){
+  $("arrowWrap").style.transform = `rotate(${deg}deg)`;
+}
+function vibrate(pattern){
+  if(navigator.vibrate) navigator.vibrate(pattern);
+}
+
+/* ===================== Speech ===================== */
+let mute=false;
+let lastSpeakAt=0;
+function speak(text, urgent=false){
+  if(mute) return;
+  const now=Date.now();
+  const cooldown = urgent ? 2500 : 9000;
+  if(now-lastSpeakAt < cooldown) return;
+  lastSpeakAt = now;
+  try{
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang="zh-TW";
+    u.rate=0.95;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+$("btnMute").onclick=()=>{
+  mute=!mute;
+  $("btnMute").textContent = `語音：${mute ? "關" : "開"}`;
+  if(!mute) speak("語音已開啟", true);
 };
 
-window.addEventListener("deviceorientation",e=>{
-  if(e.webkitCompassHeading!=null) deviceHeading=e.webkitCompassHeading;
-});
+/* ===================== Simple Route (OSRM) ===================== */
+let route=null; // { line, steps, nextIdx }
+async function fetchRoute(from, to){
+  const url = `https://router.project-osrm.org/route/v1/walking/${from.lng},${from.lat};${to.lng},${to.lat}?steps=true&geometries=geojson&overview=full`;
+  const r = await fetch(url);
+  if(!r.ok) throw new Error("route fetch failed");
+  const data = await r.json();
+  const rt = data.routes?.[0];
+  if(!rt) throw new Error("no route");
+  const legs = rt.legs?.[0];
+  const steps = legs?.steps || [];
+  const line = rt.geometry?.coordinates || [];
+  return { line, steps, nextIdx: 0 };
+}
+function getNextManeuverTarget(rt){
+  if(!rt?.steps?.length) return null;
+  const idx = Math.min(rt.nextIdx, rt.steps.length-1);
+  const st = rt.steps[idx];
+  const loc = st.maneuver?.location;
+  const mod = st.maneuver?.modifier || "";
+  if(!loc) return null;
+  return { lng: loc[0], lat: loc[1], mod };
+}
+function friendlyTurnText(mod){
+  if(mod.includes("left")) return "等一下左轉";
+  if(mod.includes("right")) return "等一下右轉";
+  return "等一下直走";
+}
+function metersToPolyline(point, lineLngLat){
+  const lat0 = toRad(point.lat);
+  const cos0 = Math.cos(lat0);
+  const R = 6371000;
+
+  function proj(p){
+    const x = toRad(p[0]) * cos0 * R;
+    const y = toRad(p[1]) * R;
+    return {x,y};
+  }
+  const P = { x: toRad(point.lng)*cos0*R, y: toRad(point.lat)*R };
+
+  let min = Infinity;
+  for(let i=0;i<lineLngLat.length-1;i++){
+    const A0 = proj(lineLngLat[i]);
+    const B0 = proj(lineLngLat[i+1]);
+    const vx = B0.x - A0.x, vy = B0.y - A0.y;
+    const wx = P.x - A0.x, wy = P.y - A0.y;
+    const c1 = vx*wx + vy*wy;
+    const c2 = vx*vx + vy*vy;
+    let t = c2 === 0 ? 0 : (c1 / c2);
+    t = Math.max(0, Math.min(1, t));
+    const px = A0.x + t*vx, py = A0.y + t*vy;
+    const dx = P.x - px, dy = P.y - py;
+    const d = Math.sqrt(dx*dx + dy*dy);
+    if(d < min) min = d;
+  }
+  return min;
+}
+function offRouteMessage(){
+  const msgs = [
+    "我們走偏了，請看箭頭。",
+    "好像走過頭了，我們回頭一點。",
+    "先停一下，看箭頭再走。"
+  ];
+  return msgs[Math.floor(Math.random()*msgs.length)];
+}
+
+/* ===================== Navigation State ===================== */
+let deviceHeading=null;
+let currPos=null;
+let watchId=null;
+let offRouteCount=0;
+let lastReRouteAt=0;
+
+function updateElderUI(){
+  const home = settings.home;
+
+  if(!home?.lat || !home?.lng){
+    setStatus("請先設定住家位置", "warn");
+    $("dirText").textContent = "請請家人先設定";
+    $("distText").textContent = "-- 公尺";
+    $("hintText").textContent = "回到首頁 → 家人模式設定";
+    $("dbg").textContent = `GPS: -- | Heading: ${deviceHeading==null?"--":Math.round(deviceHeading)+"°"} | Route: --`;
+    return;
+  }
+
+  if(!currPos){
+    setStatus("定位中...（請到戶外）", "warn");
+    $("dirText").textContent = "正在定位";
+    $("distText").textContent = "-- 公尺";
+    $("hintText").textContent = "若超過 30 秒：請到戶外、開啟精確位置";
+    $("dbg").textContent = `GPS: -- | Heading: ${deviceHeading==null?"--":Math.round(deviceHeading)+"°"} | Route: ${route ? "OK" : "--"}`;
+    return;
+  }
+
+  const distHome = Math.round(distanceMeters(currPos, home));
+  $("distText").textContent = `${distHome} 公尺`;
+
+  let target = route ? getNextManeuverTarget(route) : null;
+
+  if(target){
+    const distToTurn = Math.round(distanceMeters(currPos, {lat:target.lat, lng:target.lng}));
+
+    if(distToTurn <= 25){
+      const say = friendlyTurnText(target.mod);
+      $("dirText").textContent = say.replace("等一下","");
+      speak(say, true);
+    }else{
+      $("dirText").textContent = "跟著箭頭走";
+    }
+
+    const br = bearingDeg(currPos, {lat:target.lat, lng:target.lng});
+    if(deviceHeading != null){
+      rotateArrow(normRel(br - deviceHeading));
+    }else{
+      rotateArrow(br);
+    }
+
+    if(distToTurn <= 10 && route.nextIdx < route.steps.length-1){
+      route.nextIdx += 1;
+    }
+
+    $("hintText").textContent = `下一個節點約 ${distToTurn} 公尺`;
+  }else{
+    const br = bearingDeg(currPos, home);
+    if(deviceHeading != null){
+      rotateArrow(normRel(br - deviceHeading));
+    }else{
+      rotateArrow(br);
+    }
+    $("dirText").textContent = "請朝箭頭走";
+    $("hintText").textContent = "（尚未取得路線）";
+  }
+
+  if(route?.line?.length){
+    const dLine = metersToPolyline(currPos, route.line);
+    if(dLine > 25) offRouteCount += 1;
+    else offRouteCount = Math.max(0, offRouteCount-1);
+
+    if(offRouteCount >= 3){
+      setStatus("偏離路線", "warn");
+      vibrate([200,100,200,100,300]);
+      speak(offRouteMessage(), true);
+      offRouteCount = 0;
+
+      const now = Date.now();
+      if(now - lastReRouteAt > 15000){
+        lastReRouteAt = now;
+        reRoute(true);
+      }
+    }else{
+      setStatus("正在引導回家");
+    }
+  }else{
+    setStatus("正在引導回家");
+  }
+
+  $("dbg").textContent = `GPS: ${currPos.lat.toFixed(5)},${currPos.lng.toFixed(5)} | Heading: ${deviceHeading==null?"--":Math.round(deviceHeading)+"°"} | Route: ${route ? "OK" : "--"}`;
+}
+
+/* ===================== ✅ 必修補丁：startWatch ===================== */
+function startWatch(){
+  if(!navigator.geolocation){
+    setStatus("不支援定位", "danger");
+    alert("此裝置不支援定位");
+    return;
+  }
+
+  setStatus("定位中...（請到戶外）", "warn");
+  $("dirText").textContent = "正在定位";
+  $("hintText").textContent = "如果超過 30 秒，請到戶外或開啟精確位置";
+
+  // 先抓一次當下定位（更容易拿到第一點）
+  navigator.geolocation.getCurrentPosition(
+    (pos)=>{
+      currPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      setStatus("已取得定位");
+      updateElderUI();
+      beginWatch(); // 取得第一點後再開始 watch
+      // 第一點到手後，順便抓路線
+      setTimeout(()=>reRoute(true), 600);
+    },
+    (err)=>{
+      const msg =
+        err.code === 1 ? "定位被拒絕（請允許位置權限）" :
+        err.code === 2 ? "無法取得定位（請到戶外/開精確位置）" :
+        "定位逾時（請到戶外/稍後再試）";
+      setStatus(msg, "danger");
+      $("dirText").textContent = "無法定位";
+      $("hintText").textContent = "請檢查：定位權限、精確位置、戶外空曠處";
+      alert(msg);
+    },
+    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+  );
+
+  function beginWatch(){
+    if(watchId != null) navigator.geolocation.clearWatch(watchId);
+
+    watchId = navigator.geolocation.watchPosition(
+      (pos)=>{
+        currPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        setStatus("正在引導回家");
+        updateElderUI();
+      },
+      (err)=>{
+        const msg =
+          err.code === 1 ? "定位被拒絕（請允許位置權限）" :
+          err.code === 2 ? "無法取得定位（請到戶外/開精確位置）" :
+          "定位逾時（請稍後再試）";
+        setStatus(msg, "danger");
+      },
+      { enableHighAccuracy: true, maximumAge: 800, timeout: 20000 }
+    );
+
+    // 30秒保險：仍沒拿到點就提醒
+    setTimeout(()=>{
+      if(!currPos){
+        setStatus("仍在定位中（建議到戶外）", "warn");
+        $("hintText").textContent = "若一直卡住：開啟精確位置、關低耗電、換戶外";
+      }
+    }, 30000);
+  }
+}
+
+/* ===================== ReRoute ===================== */
+async function reRoute(silent=false){
+  const home = settings.home;
+  if(!currPos || !home?.lat || !home?.lng){
+    if(!silent) alert("請先取得定位並設定住家位置");
+    return;
+  }
+  try{
+    setStatus("路線規劃中...");
+    route = await fetchRoute(currPos, home);
+    route.nextIdx = 0;
+    setStatus("正在引導回家");
+    if(!silent) speak("已更新路線", true);
+    updateElderUI();
+  }catch(e){
+    setStatus("路線失敗", "danger");
+    if(!silent) alert("路線取得失敗（可能是網路或服務限制）");
+  }
+}
+
+/* ===================== Motion Permission ===================== */
+$("btnPerm").onclick = async ()=>{
+  try{
+    if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function"){
+      const res = await DeviceOrientationEvent.requestPermission();
+      if(res !== "granted") throw new Error("not granted");
+    }
+    setStatus("感測可用");
+  }catch(e){
+    setStatus("感測未允許", "warn");
+    alert("請允許『動作與方向』，箭頭會更準。");
+  }
+};
+window.addEventListener("deviceorientation",(e)=>{
+  if(typeof e.webkitCompassHeading === "number"){
+    deviceHeading = e.webkitCompassHeading;
+  }else if(typeof e.alpha === "number"){
+    deviceHeading = (360 - e.alpha) % 360;
+  }
+}, true);
+
+/* ===================== SOS ===================== */
+function getMapsLink(pos){ return `https://www.google.com/maps?q=${pos.lat},${pos.lng}`; }
+$("btnSOS").onclick = ()=>{
+  const phone = (settings.familyPhone||"").trim();
+  if(phone) window.location.href = `tel:${phone}`;
+
+  if(currPos){
+    const msg = `我需要協助，我的位置：${getMapsLink(currPos)}`;
+    const smsUrl = phone ? `sms:${phone}?&body=${encodeURIComponent(msg)}` : `sms:?&body=${encodeURIComponent(msg)}`;
+    window.open(smsUrl, "_blank");
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank");
+  }
+};
+
+/* ===================== Screens ===================== */
+function show(screen){
+  $("screenHome").classList.add("hidden");
+  $("screenElder").classList.add("hidden");
+  $("screenFamily").classList.add("hidden");
+  screen.classList.remove("hidden");
+}
+
+$("btnBack").onclick = ()=>{
+  show($("screenHome"));
+  setStatus("請選模式");
+};
+
+$("goElder").onclick = ()=>{
+  show($("screenElder"));
+  setStatus("老人模式");
+  updateElderUI();
+};
+
+$("goFamily").onclick = ()=>{
+  show($("screenFamily"));
+  setStatus("家人模式");
+  fillFamilyForm();
+  updateShareLink();
+};
+
+/* ===================== Family Mode ===================== */
+function fillFamilyForm(){
+  $("familyPhone").value = settings.familyPhone || "";
+  $("homeLat").value = settings.home?.lat ?? "";
+  $("homeLng").value = settings.home?.lng ?? "";
+  $("btnToggleAuto").textContent = `自動開始：${settings.autoStart ? "開" : "關"}`;
+}
+
+function updateShareLink(){
+  const base = `${location.origin}${location.pathname}`;
+  const lat = $("homeLat").value.trim();
+  const lng = $("homeLng").value.trim();
+  const phone = $("familyPhone").value.trim();
+  const auto = settings.autoStart ? "1" : "0";
+
+  const params = new URLSearchParams();
+  params.set("mode", "elder");
+  if(lat) params.set("homeLat", lat);
+  if(lng) params.set("homeLng", lng);
+  if(phone) params.set("phone", phone);
+  params.set("autostart", auto);
+
+  $("shareLink").value = `${base}?${params.toString()}`;
+}
+
+$("btnSave").onclick = ()=>{
+  const phone = $("familyPhone").value.trim();
+  const lat = parseFloat($("homeLat").value);
+  const lng = parseFloat($("homeLng").value);
+
+  if(!isFinite(lat) || !isFinite(lng)){
+    alert("請填入住家經緯度（Lat/Lng）");
+    return;
+  }
+
+  settings = {
+    ...settings,
+    familyPhone: phone,
+    home: { lat, lng }
+  };
+  saveSettings(settings);
+  setStatus("已儲存設定");
+  updateShareLink();
+  alert("已儲存（可複製分享連結給長輩）");
+};
+
+$("btnPreviewElder").onclick = ()=>{
+  show($("screenElder"));
+  setStatus("老人模式");
+  updateElderUI();
+};
+
+$("familyPhone").addEventListener("input", updateShareLink);
+$("homeLat").addEventListener("input", updateShareLink);
+$("homeLng").addEventListener("input", updateShareLink);
+
+$("btnCopy").onclick = async ()=>{
+  try{
+    await navigator.clipboard.writeText($("shareLink").value);
+    alert("已複製連結");
+  }catch(e){
+    $("shareLink").focus();
+    $("shareLink").select();
+    alert("請手動複製（已選取文字）");
+  }
+};
+
+$("btnToggleAuto").onclick = ()=>{
+  settings.autoStart = !settings.autoStart;
+  saveSettings(settings);
+  $("btnToggleAuto").textContent = `自動開始：${settings.autoStart ? "開" : "關"}`;
+  updateShareLink();
+};
+
+/* ===================== Start / ReRoute ===================== */
+$("btnStart").onclick = ()=>{
+  setStatus("開始引導");
+  speak("開始回家", true);
+  startWatch();
+};
+$("btnReRoute").onclick = ()=>reRoute(false);
+
+/* ===================== Query Params (Share Link) ===================== */
+function applyQuery(){
+  const q = new URLSearchParams(location.search);
+  const mode = q.get("mode");
+
+  const homeLat = q.get("homeLat");
+  const homeLng = q.get("homeLng");
+  const phone   = q.get("phone");
+  const auto    = q.get("autostart");
+
+  let changed=false;
+  if(homeLat && homeLng){
+    const lat = parseFloat(homeLat), lng = parseFloat(homeLng);
+    if(isFinite(lat) && isFinite(lng)){
+      settings.home = {lat, lng};
+      changed=true;
+    }
+  }
+  if(phone != null){
+    settings.familyPhone = phone;
+    changed=true;
+  }
+  if(auto === "0" || auto === "1"){
+    settings.autoStart = (auto === "1");
+    changed=true;
+  }
+  if(changed) saveSettings(settings);
+
+  if(mode === "elder"){
+    show($("screenElder"));
+    setStatus("老人模式");
+    updateElderUI();
+
+    if(settings.autoStart){
+      setTimeout(()=>{ $("btnStart").click(); }, 600);
+    }
+  }else if(mode === "family"){
+    show($("screenFamily"));
+    setStatus("家人模式");
+    fillFamilyForm();
+    updateShareLink();
+  }else{
+    show($("screenHome"));
+    setStatus("請選模式");
+  }
+}
+applyQuery();
 </script>
 
 </body>
